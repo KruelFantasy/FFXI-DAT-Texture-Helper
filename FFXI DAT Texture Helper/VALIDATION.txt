@@ -1,0 +1,29 @@
+VALIDATION FOR 2.4
+
+Real supplied sample replay (independent Python implementation of the binary
+layout/decoding/edit checks):
+- ROM/210/17.DAT: 5 selected texture IDs.
+- ROM/226/118.DAT: 8 selected texture IDs, including repeated definitions.
+- ROM/332/99.DAT: 11 selected texture IDs, including encoded mesh references.
+- Total: 24 IDs, 26 definition edits, 35 reference edits (13 encoded).
+- All intended reference fields validate. Every decoded mesh matches exactly
+  except intended material IDs. Reversing edits reproduces every original byte.
+- Structural sample check: 470 MMB material fields, 14 sprite material fields,
+  11 particle material fields; no bounds/index errors in supplied custom DATs.
+
+Prior regression replay:
+- 35 recommended definitions in 32 real custom DATs and 158 model references.
+- Different-hash and synthetic texture-size variants preserve eligibility.
+- Generalized recommendation rule and scanner/output modules unchanged.
+- Prior independent DPI geometry checks cover 100/125/150/175/200% on FHD,
+  1440p and 4K. The user confirmed the preceding picker/window changes worked.
+
+UI source review confirms ColumnWidthChanged no longer directly sets header
+height. It only queues the timer; update errors are caught with bounded retries.
+
+LIMITS: This environment has no C# compiler, Windows PowerShell or Windows Forms
+runtime. The distributed C#/PowerShell has been source-reviewed but NOT compiled
+or executed here. Binary replays are independent checks, not execution of that
+code. Windows expansion, headers, patch/restore and in-game appearance still
+require verification. The supplied three files do not establish support for
+all 176 optional entries or every other possible DAT format.

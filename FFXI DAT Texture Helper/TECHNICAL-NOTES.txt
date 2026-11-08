@@ -1,0 +1,58 @@
+FFXI DAT TEXTURE HELPER 2.4
+
+Recommendations still use the generalized naming rule, with no fixed texture
+names, paths, known-file hashes or bundled fix profiles. The ID must be absent
+from the PARSED original definition inventory and have a blank eight-byte suffix
+or a suffix shared by another parsed ID. Broader overlaps remain optional.
+Existing scanner coverage gaps remain gaps, not evidence of corruption.
+
+FIELD SUPPORT
+Texture definitions: type 0x20, name at chunk+17. All definitions of a selected
+ID in that DAT receive the same replacement. Pixel payloads are never searched
+and replaced. Report definition headers must match the supplied file.
+Type 0x2A: existing material marker 00 00 00 80 followed by the 16-byte ID.
+Type 0x1F: supported marker 5/6, counted/padded material table, bounded vertex run.
+Type 0x21: material at chunk+24, bounded counted 148-byte sprite cards.
+Type 0x2E: supported mode-5 decoding and legacy MMB4 plaintext; bounded material,
+vertex and index streams, including index-range validation. Empty meshes are
+allowed. Unknown layouts, unexpected selected-ID occurrences or missing local
+references refuse the affected selection rather than guessing.
+
+Mode-5 decoding uses two 256-byte tables extracted from the user's FFXiMain.dll
+by unique signatures. The DLL is read as bytes, never executed or edited. No
+game DLL or proprietary key table is distributed. An unrecognized table/layout
+remains unsupported. The reference layout and decoding were cross-checked with:
+https://github.com/vekien/xi-tools/blob/main/src/xi/zone/xi_decrypt.py
+https://github.com/vekien/xi-tools/blob/main/src/xi/zone/xi_export.py
+https://github.com/vekien/xi-tools/blob/main/src/xi/fx/xi_particle_mesh.py
+https://github.com/vekien/xi-tools/blob/main/docs/fx/particle_mesh.md
+
+Encoded edits use a byte permutation map and XOR deltas. Only the raw bytes
+corresponding to the decoded 16-byte name fields change. Each modified mesh is
+fully decoded again and compared with the original decoded mesh plus the
+intended material-name substitutions. Geometry, pixels and animation data are
+not re-encoded. Reversing recorded raw/encoded edits must reproduce the entire
+original file exactly. Written output hashes are verified. Source hashes detect
+changes after assessment; they do not gate recommendations.
+
+New undo manifests are version 2 and include encoded source-byte mappings.
+Restore accepts prior version-1 manifests too. Keep this helper version with
+new packages; old helpers cannot interpret encoded undo mappings.
+
+Optional overlaps may be intentional and remain unchecked. Structural support
+means the tool knows how to rename local fields, not that a rename is necessary
+or that runtime cross-DAT references are fully modeled. External references,
+resource scopes, runtime lifetime behavior and XIPivot priority are not proved
+by a static scan. Recommended repairs are naming-risk mitigation, not proof of
+an individual crash cause or a guarantee of exhaustive conflict detection.
+
+UI CRASH FIX
+Column-width events only queue a Windows Forms timer. Header geometry changes
+run on a later message-loop tick, outside fill-column resizing. A bounded retry
+handles the specific fill-resize race without letting an exception escape the
+UI event. Timers are disposed with their grids. Existing DPI/picker layout is
+preserved. Header measurement still uses current font, width and device context.
+
+Scanner.cs and Output-Management.ps1 are unchanged. Source installations are
+read-only; output publication, session paths, locks, ownership checks and fixed
+report/output directories are preserved.
